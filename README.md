@@ -1,9 +1,9 @@
-### Compose Desktop 인증용 서버 입니다.
+## API
 
+### 카카오 로그인
 
-### 링크
+#### Request
 
-- **카카오 로그인**
 - POST: https://asia-northeast3-beep-3fcc2.cloudfunctions.net/kakaoCustomAuth
 - Content-Type: application/json
 - Body
@@ -14,6 +14,18 @@
     }
 }
 ```
+
+#### Response
+
+```json
+{
+    "result": {
+        "token": ""
+    }
+}
+```
+
+---
 
 ### 배포 방법
 
