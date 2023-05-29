@@ -39,6 +39,9 @@
 npm install --save request request-promise
 ```
 
+- package.json 에 추가 되었는지 확인하기
+- functions 경로의 package.json 인지 확인하기
+
 ### Playstore HashKey 얻기
 
 > release.keystore 와 playstore 에 올라간 인증서는 다르기 때문에 추가해야한다
