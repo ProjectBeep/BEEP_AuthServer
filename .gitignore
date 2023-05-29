@@ -65,5 +65,4 @@ node_modules/
 # dotenv environment variables file
 .env
 
-/adminKey.json/
 functions/adminKey.json
