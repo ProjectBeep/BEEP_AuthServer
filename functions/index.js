@@ -125,7 +125,6 @@ function createFirebaseTokenWithKakao(provider, accessToken) {
 function createFirebaseTokenWithNaver(provider, accessToken) {
     return requestNaverMe(accessToken).then((res) => {
         const response = JSON.parse(res).response;
-        console.log(`${provider}:${response.id}`)
         const userId = `${provider}:${response.id}`;
         if (!userId) {
             throw new functions.https.HttpsError("invalid-argument", "UserId 를 찾지 못했습니다.");
@@ -178,10 +177,46 @@ async function authenticate({provider, token}, res) {
         throw new functions.https.HttpsError("invalid-argument", "유효하지 않는 token 입니다.");
     }
 
-    const firebaseToken = await createFirebaseToken(provider, token);
-    res.json({
-        "token": firebaseToken,
-    });
+    try {
+        const firebaseToken = await createFirebaseToken(provider, token);
+        res.json({
+            "token": firebaseToken,
+        });
+    } catch (error) {
+        if (error.errorInfo && error.errorInfo.code && error.errorInfo.message) {
+            // Firebase 오류
+            res.status(500).json({
+                code: error.errorInfo.code,
+                message: error.errorInfo.message,
+            });
+        } else if (error.statusCode) {
+            const errorData = JSON.parse(error.error);
+            if (errorData.code && errorData.msg) {
+                // KaKao 오류
+                res.status(error.statusCode).json({
+                    code: errorData.code.toString(),
+                    msg: errorData.msg,
+                });
+            } else if (errorData.resultcode && errorData.message) {
+                // Naver 오류
+                res.status(error.statusCode).json({
+                    code: errorData.resultcode,
+                    msg: errorData.message,
+                });
+            } else if (errorData.error && errorData.error_description) {
+                // Google 오류
+                res.status(error.statusCode).json({
+                    code: errorData.error,
+                    msg: errorData.error_description,
+                });
+            } else {
+                res.status(500).json({
+                    code: "Unknown",
+                    msg: "알 수 없는 오류가 발생했습니다.",
+                });
+            }
+        }
+    }
 }
 
 exports.authWithkakao = onRequest({cors: true}, async (req, res) => {
