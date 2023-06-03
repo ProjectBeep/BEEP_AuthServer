@@ -16,14 +16,38 @@ initializeApp();
 const request = require("request-promise");
 
 const kakaoRequestMeUrl = "https://kapi.kakao.com/v2/user/me";
+const PROVIDER_KAKAO = "KAKAO";
 
-function requestKakaoMe(kakaoAccessToken) {
+function requestKakaoMe(accessToken) {
     return request({
         method: "GET",
         headers: {
-            "Authorization": `Bearer ${kakaoAccessToken}`,
+            "Authorization": `Bearer ${accessToken}`,
         },
         url: kakaoRequestMeUrl,
+    });
+}
+
+const naverRequestMeUrl = "https://openapi.naver.com/v1/nid/me";
+const PROVIDER_NAVER = "NAVER";
+
+function requestNaverMe(accessToken) {
+    return request({
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${accessToken}`,
+        },
+        url: naverRequestMeUrl,
+    });
+}
+
+const googleRequestMeUrl = "https://oauth2.googleapis.com/tokeninfo";
+const PROVIDER_GOOGLE = "GOOGLE";
+
+function requestGoogleMe(idToken) {
+    return request({
+        method: "GET",
+        url: `${googleRequestMeUrl}?id_token=${idToken}`,
     });
 }
 
@@ -72,44 +96,114 @@ function updateOrCreateUser(
         });
 }
 
+function createFirebaseTokenWithKakao(provider, accessToken) {
+    return requestKakaoMe(accessToken).then((response) => {
+        const body = JSON.parse(response);
+        const userId = `${provider}:${body.id}`;
+        if (!userId) {
+            throw new functions.https.HttpsError("invalid-argument", "UserId 를 찾지 못했습니다.");
+        }
+
+        let displayName = null;
+        let profileImage = null;
+        let email = null;
+        if (body.kakao_account) {
+            email = body.kakao_account.email;
+        }
+        if (body.kakao_account.profile) {
+            displayName = body.kakao_account.profile.nickname;
+            profileImage = body.kakao_account.profile.profile_image_url;
+        }
+
+        return updateOrCreateUser(provider, userId, displayName, email, profileImage);
+    }).then((userRecord) => {
+        const userId = userRecord.uid;
+        return getAuth().createCustomToken(userId, {"provider": provider});
+    });
+}
+
+function createFirebaseTokenWithNaver(provider, accessToken) {
+    return requestNaverMe(accessToken).then((res) => {
+        const response = JSON.parse(res).response;
+        console.log(`${provider}:${response.id}`)
+        const userId = `${provider}:${response.id}`;
+        if (!userId) {
+            throw new functions.https.HttpsError("invalid-argument", "UserId 를 찾지 못했습니다.");
+        }
+
+        const displayName = response.nickname;
+        const profileImage = response.profile_image;
+        const email = response.email;
+
+        return updateOrCreateUser(provider, userId, displayName, email, profileImage);
+    }).then((userRecord) => {
+        const userId = userRecord.uid;
+        return getAuth().createCustomToken(userId, {"provider": provider});
+    });
+}
+
+function createFirebaseTokenWithGoogle(provider, accessToken) {
+    return requestGoogleMe(accessToken).then((response) => {
+        const body = JSON.parse(response);
+        const userId = `${provider}:${body.sub}`;
+        if (!userId) {
+            throw new functions.https.HttpsError("invalid-argument", "UserId 를 찾지 못했습니다.");
+        }
+
+        const displayName = body.name;
+        const profileImage = body.picture;
+        const email = body.email;
+
+        return updateOrCreateUser(provider, userId, displayName, email, profileImage);
+    }).then((userRecord) => {
+        const userId = userRecord.uid;
+        return getAuth().createCustomToken(userId, {"provider": provider});
+    });
+}
+
 function createFirebaseToken(provider, accessToken) {
-    if (provider == "KAKAO") {
-        return requestKakaoMe(accessToken).then((response) => {
-            const body = JSON.parse(response);
-            const userId = `${provider}:${body.id}`;
-            if (!userId) {
-                throw new functions.https.HttpsError("invalid-argument", "UserId 를 찾지 못했습니다.");
-            }
-
-            let displayName = null;
-            let profileImage = null;
-            let email = null;
-            if (body.kakao_account) {
-                email = body.kakao_account.email;
-            }
-            if (body.kakao_account.profile) {
-                displayName = body.kakao_account.profile.nickname;
-                profileImage = body.kakao_account.profile.profile_image_url;
-            }
-
-            return updateOrCreateUser(provider, userId, displayName, email, profileImage);
-        }).then((userRecord) => {
-            const userId = userRecord.uid;
-            return getAuth().createCustomToken(userId, {"provider": provider});
-        });
+    if (provider == PROVIDER_KAKAO) {
+        return createFirebaseTokenWithKakao(provider, accessToken);
+    } else if (provider == PROVIDER_NAVER) {
+        return createFirebaseTokenWithNaver(provider, accessToken);
+    } else if (provider == PROVIDER_GOOGLE) {
+        return createFirebaseTokenWithGoogle(provider, accessToken);
     }
+
     throw new functions.https.HttpsError("invalid-argument", "존재하지 않는 provider 입니다.");
 }
 
-exports.authWithkakao = onRequest({cors: true}, async (req, res) => {
-    const token = req.body.data.token;
-
+async function authenticate({provider, token}, res) {
     if (!(typeof token === "string") || token.length === 0) {
         throw new functions.https.HttpsError("invalid-argument", "유효하지 않는 token 입니다.");
     }
 
-    const firebaseToken = await createFirebaseToken("KAKAO", token);
+    const firebaseToken = await createFirebaseToken(provider, token);
     res.json({
         "token": firebaseToken,
     });
+}
+
+exports.authWithkakao = onRequest({cors: true}, async (req, res) => {
+    const token = req.body.data.token;
+    authenticate({
+        provider: "KAKAO",
+        token: token,
+    }, res);
+});
+
+exports.authWithNaver = onRequest({cors: true}, async (req, res) => {
+    const token = req.body.data.token;
+    authenticate({
+        provider: "NAVER",
+        token: token,
+    }, res);
+});
+
+exports.authWithGoogle = onRequest({cors: true}, async (req, res) => {
+    const token = req.body.data.token;
+    authenticate({
+        provider: "GOOGLE",
+        token: token,
+    }, res);
 });
