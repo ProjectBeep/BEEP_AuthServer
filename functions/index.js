@@ -1,11 +1,17 @@
-const admin = require("firebase-admin");
+
 const functions = require("firebase-functions");
+
+const {getAuth} = require("firebase-admin/auth");
+
+const {onRequest} = require("firebase-functions/v2/https");
 
 const {initializeApp} = require("firebase-admin/app");
 
-initializeApp({
-    serviceAccountId: "firebase-adminsdk-r3j6q@beep-3fcc2.iam.gserviceaccount.com",
-});
+const {setGlobalOptions} = require("firebase-functions/v2");
+
+setGlobalOptions({region: "asia-northeast3"});
+
+initializeApp();
 
 const request = require("request-promise");
 
@@ -56,11 +62,11 @@ function updateOrCreateUser(
         requestParams["photoURL"] = photoURL;
     }
 
-    return admin.auth().updateUser(userId, requestParams)
+    return getAuth().updateUser(userId, requestParams)
         .catch((error) => {
             if (error.code == "auth/user-not-found") {
                 requestParams["uid"] = userId;
-                return admin.auth().createUser(requestParams);
+                return getAuth().createUser(requestParams);
             }
             throw error;
         });
@@ -89,23 +95,21 @@ function createFirebaseToken(provider, accessToken) {
             return updateOrCreateUser(provider, userId, displayName, email, profileImage);
         }).then((userRecord) => {
             const userId = userRecord.uid;
-            return admin.auth().createCustomToken(userId, {"provider": provider});
+            return getAuth().createCustomToken(userId, {"provider": provider});
         });
     }
     throw new functions.https.HttpsError("invalid-argument", "존재하지 않는 provider 입니다.");
 }
 
-exports.kakaoCustomAuth = functions.region("asia-northeast3").https
-    .onCall((data) => {
-        const token = data.token;
+exports.authWithkakao = onRequest({cors: true}, async (req, res) => {
+    const token = req.body.data.token;
 
-        if (!(typeof token === "string") || token.length === 0) {
-            throw new functions.https.HttpsError("invalid-argument", "유효하지 않는 token 입니다.");
-        }
+    if (!(typeof token === "string") || token.length === 0) {
+        throw new functions.https.HttpsError("invalid-argument", "유효하지 않는 token 입니다.");
+    }
 
-        return createFirebaseToken("KAKAO", token).then((firebaseToken) => {
-            return {
-                "token": firebaseToken,
-            };
-        });
+    const firebaseToken = await createFirebaseToken("KAKAO", token);
+    res.json({
+        "token": firebaseToken,
     });
+});
