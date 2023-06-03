@@ -27,6 +27,10 @@
 
 ---
 
+### 테스트 방법
+
+- firebase emulators:start --only functions
+
 ### 배포 방법
 
 - firebase deploy --only functions

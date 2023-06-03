@@ -66,3 +66,4 @@ node_modules/
 .env
 
 functions/adminKey.json
+apiKey.md
