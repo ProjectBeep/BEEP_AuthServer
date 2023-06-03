@@ -1,10 +1,39 @@
 ## API
 
-### 카카오 로그인
+<details>
+    <summary>카카오 로그인</summary>
+
+    #### Request
+
+    - POST: https://authwithkakao-f3yfujosoa-du.a.run.app
+    - Content-Type: application/json
+    - Body
+    ```json
+    {
+        "data": {
+            "token": "${accessToken}"
+        }
+    }
+    ```
+
+    #### Response
+
+    ```json
+    {
+        "result": {
+            "token": ""
+        }
+    }
+    ```
+
+</details>
+
+<details>
+    <summary>네이버 로그인</summary>
 
 #### Request
 
-- POST: https://asia-northeast3-beep-3fcc2.cloudfunctions.net/kakaoCustomAuth
+- POST: https://authwithnaver-f3yfujosoa-du.a.run.app
 - Content-Type: application/json
 - Body
 ```json
@@ -25,7 +54,51 @@
 }
 ```
 
+</details>
+
+<details>
+    <summary>구글 로그인</summary>
+
+#### Request
+
+- POST: https://authwithgoogle-f3yfujosoa-du.a.run.app
+- Content-Type: application/json
+- Body
+
+```json
+{
+    "data": {
+        "token": "${idToken}"
+    }
+}
+```
+
+#### Response
+
+```json
+{
+    "result": {
+        "token": ""
+    }
+}
+```
+</details>
+
 ---
+
+### Error Handling
+
+> origin 값 (firebase, kakao, naver, google)
+
+```json
+{
+    origin: "" (string),
+    code: "" (string),
+    message: "" (string),
+}
+```
+
+
 
 ### 테스트 방법
 
