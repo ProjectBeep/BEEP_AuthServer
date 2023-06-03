@@ -92,9 +92,9 @@
 
 ```json
 {
-    origin: "" (string),
-    code: "" (string),
-    message: "" (string),
+    origin: "",
+    code: "",
+    message: "",
 }
 ```
 
