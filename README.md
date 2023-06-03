@@ -3,28 +3,28 @@
 <details>
     <summary>카카오 로그인</summary>
 
-    #### Request
+#### Request
 
-    - POST: https://authwithkakao-f3yfujosoa-du.a.run.app
-    - Content-Type: application/json
-    - Body
-    ```json
-    {
-        "data": {
-            "token": "${accessToken}"
-        }
+- POST: https://authwithkakao-f3yfujosoa-du.a.run.app
+- Content-Type: application/json
+- Body
+```json
+{
+    "data": {
+        "token": "${accessToken}"
     }
-    ```
+}
+```
 
-    #### Response
+#### Response
 
-    ```json
-    {
-        "result": {
-            "token": ""
-        }
+```json
+{
+    "result": {
+        "token": ""
     }
-    ```
+}
+```
 
 </details>
 
