@@ -220,26 +220,9 @@ async function authenticate({provider, token}, res) {
     }
 }
 
-exports.authWithkakao = onRequest({cors: true}, async (req, res) => {
-    const token = req.body.data.token;
+exports.authWithToken = onRequest({cors: true}, async (req, res) => {
     authenticate({
-        provider: "KAKAO",
-        token: token,
-    }, res);
-});
-
-exports.authWithNaver = onRequest({cors: true}, async (req, res) => {
-    const token = req.body.data.token;
-    authenticate({
-        provider: "NAVER",
-        token: token,
-    }, res);
-});
-
-exports.authWithGoogle = onRequest({cors: true}, async (req, res) => {
-    const token = req.body.data.token;
-    authenticate({
-        provider: "GOOGLE",
-        token: token,
+        provider: req.body.provider.toUpperCase(),
+        token: req.body.token,
     }, res);
 });

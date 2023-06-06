@@ -1,75 +1,19 @@
 ## API
 
 <details>
-    <summary>카카오 로그인</summary>
+    <summary>토큰 로그인</summary>
 
 #### Request
 
-- POST: https://authwithkakao-f3yfujosoa-du.a.run.app
+> provider 값 (KAKAO, NAVER, GOOGLE)
+
+- POST: https://authWithToken-f3yfujosoa-du.a.run.app
 - Content-Type: application/json
 - Body
 ```json
 {
-    "data": {
-        "token": "${accessToken}"
-    }
-}
-```
-
-#### Response
-
-```json
-{
-    "result": {
-        "token": ""
-    }
-}
-```
-
-</details>
-
-<details>
-    <summary>네이버 로그인</summary>
-
-#### Request
-
-- POST: https://authwithnaver-f3yfujosoa-du.a.run.app
-- Content-Type: application/json
-- Body
-```json
-{
-    "data": {
-        "token": "${accessToken}"
-    }
-}
-```
-
-#### Response
-
-```json
-{
-    "result": {
-        "token": ""
-    }
-}
-```
-
-</details>
-
-<details>
-    <summary>구글 로그인</summary>
-
-#### Request
-
-- POST: https://authwithgoogle-f3yfujosoa-du.a.run.app
-- Content-Type: application/json
-- Body
-
-```json
-{
-    "data": {
-        "token": "${idToken}"
-    }
+    "provider": "",
+    "token": "${accessToken}",
 }
 ```
 
@@ -83,8 +27,6 @@
 }
 ```
 </details>
-
----
 
 ### Error Handling
 
