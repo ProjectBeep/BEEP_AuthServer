@@ -3,6 +3,10 @@
 <details>
     <summary>토큰 로그인</summary>
 
+#### .env 파일 받기 
+
+.env 는 SECRET 값을 저장하는 파일이며 따로 다운 받아서 root-directory 에 추가해주시면 됩니다
+
 #### Request
 
 > provider 값 (KAKAO, NAVER, GOOGLE, APPLE)

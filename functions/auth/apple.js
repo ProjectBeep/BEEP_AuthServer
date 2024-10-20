@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import functions from "firebase-functions";
 import { getAuth } from "firebase-admin/auth";
+import dotenv from 'dotenv';
+dotenv.config();
 
 import { updateOrCreateUser } from "./common";
 
@@ -15,8 +17,8 @@ const client = jwksClient({
     jwksUri: publicKeyUrl,
 });
 
-const CLIENT_ID = ""
-const CLIENT_SECRET = ""
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 async function verifyIdToken(idToken) {
     const decodedToken = jwt.decode(idToken, { complete: true });
