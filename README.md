@@ -5,12 +5,13 @@
 
 #### Request
 
-> provider 값 (KAKAO, NAVER, GOOGLE)
+> provider 값 (KAKAO, NAVER, GOOGLE, APPLE)
 
 - POST: https://authWithToken-f3yfujosoa-du.a.run.app
 - Content-Type: application/json
 - Body
 ```json
+// apple 의 경우 accessToken 값으로 identityToken (JWT) 값을 전송한다
 {
     "provider": "",
     "token": "${accessToken}",
@@ -30,7 +31,7 @@
 
 ### Error Handling
 
-> origin 값 (firebase, kakao, naver, google)
+> origin 값 (firebase, kakao, naver, google, apple, unknown)
 
 ```json
 {
