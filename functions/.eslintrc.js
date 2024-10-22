@@ -1,31 +1,29 @@
 module.exports = {
   env: {
-    es6: true,
+    browser: true,
+    es2021: true,
     node: true,
-  },
-  parserOptions: {
-    "ecmaVersion": 2018,
   },
   extends: [
     "eslint:recommended",
-    "google",
+    "plugin:node/recommended",
+    "plugin:promise/recommended",
+    "plugin:prettier/recommended",
   ],
-  rules: {
-    "no-restricted-globals": ["error", "name", "length"],
-    "prefer-arrow-callback": "error",
-    "quotes": ["error", "double", {"allowTemplateLiterals": true}],
-    "indent": "off",
-    "max-len": ["error", {"code": 120}],
-    "require-jsdoc": 0,
+  parserOptions: {
+    ecmaVersion: 12,
+    sourceType: "module",
   },
-  overrides: [
-    {
-      files: ["**/*.spec.*"],
-      env: {
-        mocha: true,
-      },
-      rules: {},
-    },
-  ],
-  globals: {},
+  plugins: ["prettier"],
+  rules: {
+    "prettier/prettier": "error",
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    semi: ["error", "always"],
+    quotes: ["error", "double", { allowTemplateLiterals: true }],
+    indent: "off",
+    "max-len": ["error", { code: 120 }],
+    "require-jsdoc": 0,
+    "prefer-arrow-callback": "error",
+  },
 };

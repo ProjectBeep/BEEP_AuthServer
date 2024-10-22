@@ -1,3 +1,5 @@
+const { logger } = require("firebase-functions");
+
 const { onRequest } = require("firebase-functions/v2/https");
 
 const { initializeApp } = require("firebase-admin/app");
@@ -11,8 +13,16 @@ setGlobalOptions({ region: "asia-northeast3" });
 initializeApp();
 
 exports.authWithToken = onRequest({ cors: true }, async (req, res) => {
-    await authenticate({
-        provider: req.body.provider.toUpperCase(),
-        token: req.body.token,
-    }, res);
+  const provider = req.body.provider.toUpperCase();
+  const token = req.body.token;
+
+  logger.log("authWithToken", provider, token);
+
+  await authenticate(
+    {
+      provider: provider,
+      token: token,
+    },
+    res
+  );
 });
