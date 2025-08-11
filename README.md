@@ -3,9 +3,9 @@
 <details>
     <summary>토큰 로그인</summary>
 
-#### .env 파일 받기 
+#### 환경 설정
 
-.env 는 SECRET 값을 저장하는 파일이며 따로 다운 받아서 root-directory 에 추가해주시면 됩니다
+현재 구현에서는 별도의 .env 파일이 필요하지 않습니다. Apple Sign-In은 Identity Token 직접 검증 방식으로 구현되어 있습니다.
 
 #### Request
 
