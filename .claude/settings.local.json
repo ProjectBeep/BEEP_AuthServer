@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(firebase login:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(npm run serve:*)",
+      "Bash(gcloud config get-value:*)"
+    ],
+    "defaultMode": "acceptEdits"
+  }
+}

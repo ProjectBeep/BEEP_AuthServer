@@ -3,10 +3,6 @@
 <details>
     <summary>토큰 로그인</summary>
 
-#### 환경 설정
-
-현재 구현에서는 별도의 .env 파일이 필요하지 않습니다. Apple Sign-In은 Identity Token 직접 검증 방식으로 구현되어 있습니다.
-
 #### Request
 
 > provider 값 (KAKAO, NAVER, GOOGLE, APPLE)

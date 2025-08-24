@@ -59,7 +59,7 @@ async function authenticate({ provider, token }, res) {
       let code = UNKNOWN_CODE;
       let msg = UNKNOWN_MSG;
       if (provider == PROVIDER_KAKAO && errorData.code && errorData.msg) {
-        origin = provider.lowerCase();
+        origin = provider.toLowerCase();
         code = errorData.code.toString();
         msg = errorData.msg;
       } else if (
@@ -67,7 +67,7 @@ async function authenticate({ provider, token }, res) {
         errorData.resultcode &&
         errorData.message
       ) {
-        origin = provider.lowerCase();
+        origin = provider.toLowerCase();
         code = errorData.resultcode;
         msg = errorData.message;
       } else if (
@@ -75,7 +75,7 @@ async function authenticate({ provider, token }, res) {
         errorData.error &&
         errorData.error_description
       ) {
-        origin = provider.lowerCase();
+        origin = provider.toLowerCase();
         code = errorData.error;
         msg = errorData.error_description;
       } else if (
@@ -83,7 +83,7 @@ async function authenticate({ provider, token }, res) {
         errorData.error &&
         errorData.error_description
       ) {
-        origin = provider.lowerCase();
+        origin = provider.toLowerCase();
         code = errorData.error;
         msg = errorData.error_description;
       }

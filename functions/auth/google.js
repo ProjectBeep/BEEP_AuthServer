@@ -3,12 +3,12 @@ const { getAuth } = require("firebase-admin/auth");
 const { updateOrCreateUser } = require("./common");
 const axios = require("axios");
 
-const requestMeUrl = "https://oauth2.googleapis.com/tokeninfo";
+const requestMeUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
 
 async function createFirebaseTokenWithGoogle(provider, accessToken) {
   const response = await requestMe(accessToken);
-  const body = JSON.parse(response);
-  const userId = `${provider}:${body.sub}`;
+  const body = response; // axios는 이미 JSON을 파싱해줌
+  const userId = `${provider}:${body.id}`;
   if (!userId) {
     throw new functions.https.HttpsError(
       "invalid-argument",
@@ -30,18 +30,18 @@ async function createFirebaseTokenWithGoogle(provider, accessToken) {
   return getAuth().createCustomToken(userRecord.uid, { provider: provider });
 }
 
-async function requestMe(idToken) {
+async function requestMe(accessToken) {
   try {
     const response = await axios.get(requestMeUrl, {
-      params: {
-        id_token: idToken,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return response.data;
   } catch (error) {
     throw new functions.https.HttpsError(
       "invalid-argument",
-      "Invalid ID token"
+      "Invalid access token"
     );
   }
 }
